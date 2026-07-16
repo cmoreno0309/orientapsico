@@ -1,0 +1,37 @@
+package com.orientapsi.security;
+
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+
+@Component
+@Slf4j
+public class AuthorizeLogic {
+
+    public boolean hasAccess(String path) {
+        boolean hasAccess = false;
+
+        String methodRole = switch (path) {
+            case "findAll" -> "ADMIN";
+            case "findById", "getById" -> "USER,PSICOLOGO";
+            default -> "ADMIN";
+        };
+
+        String[] methodRoles = methodRole.split(",");
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        for (GrantedAuthority ga : auth.getAuthorities()) {
+            String roleUser = ga.getAuthority();
+            for (String role : methodRoles) {
+                if (roleUser.equalsIgnoreCase(role)) {
+                    hasAccess = true;
+                    break;
+                }
+            }
+        }
+
+        return hasAccess;
+    }
+}

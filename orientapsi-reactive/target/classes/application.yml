@@ -1,0 +1,12 @@
+server:
+  port: 8081   # distinto puerto al backend real (8080), para poder correr ambos a la vez
+
+spring:
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/orientapsi_db2
+    username: postgres
+    password: postgres
+
+logging:
+  level:
+    org.springframework.r2dbc: DEBUG   # útil al inicio para ver el SQL generado, quítalo después
