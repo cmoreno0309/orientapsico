@@ -1,0 +1,9 @@
+@import "tailwindcss";
+@import "daisyui/daisyui.css" layer(components);
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+

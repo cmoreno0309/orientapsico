@@ -1,0 +1,398 @@
+<div class="min-h-screen bg-gradient-to-br from-violet-50 via-white to-teal-50">
+  <!-- Header -->
+  <div class="navbar bg-white/95 backdrop-blur-sm shadow-sm">
+    <div class="navbar-start">
+      <a routerLink="/" class="flex items-center gap-2 pl-4">
+        <img src="assets/logo-ce.jpg" alt="Centro Acompañarte" class="h-10" />
+      </a>
+    </div>
+    <div class="navbar-end pr-4">
+      <a routerLink="/" class="btn btn-ghost btn-sm text-gray-600">← Volver al inicio</a>
+    </div>
+  </div>
+
+  <div class="container mx-auto px-4 py-8 max-w-3xl">
+    <!-- No convocatoria -->
+    @if (noConvocatoria()) {
+      <div class="card bg-white shadow-lg">
+        <div class="card-body items-center text-center py-16">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <h2 class="text-2xl font-bold text-gray-800">No hay convocatoria abierta</h2>
+          <p class="text-gray-500 mt-2">En este momento no estamos recibiendo inscripciones. Síguenos en redes para enterarte cuando abramos una nueva convocatoria.</p>
+          <a routerLink="/" class="btn bg-violet-600 text-white mt-6">Volver al inicio</a>
+        </div>
+      </div>
+    }
+
+    <!-- Success -->
+    @if (registroExitoso()) {
+      <div class="card bg-white shadow-lg">
+        <div class="card-body items-center text-center py-16">
+          <div class="w-20 h-20 rounded-full bg-violet-100 flex items-center justify-center mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-violet-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <h2 class="text-2xl font-bold text-gray-800">¡Registro exitoso!</h2>
+          <p class="text-gray-500 mt-2 max-w-md">Tu solicitud ha sido recibida. Nuestro equipo evaluará tu caso y te contactará por WhatsApp en los próximos días.</p>
+          <p class="text-violet-600 font-semibold mt-4">Código de caso: {{ codigoCaso() }}</p>
+          <a routerLink="/" class="btn bg-violet-600 text-white mt-6">Volver al inicio</a>
+        </div>
+      </div>
+    }
+
+    <!-- Form -->
+    @if (!noConvocatoria() && !registroExitoso()) {
+      <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-gray-800">Formulario de inscripción</h1>
+        <p class="text-gray-500 mt-2">{{ convocatoriaNombre() }}</p>
+      </div>
+
+      <!-- Stepper -->
+      <ul class="steps steps-horizontal w-full mb-8 text-xs">
+        <li class="step" [class.step-primary]="step() >= 1">Datos personales</li>
+        <li class="step" [class.step-primary]="step() >= 2">Filtro y antecedentes</li>
+        <li class="step" [class.step-primary]="step() >= 3">Motivo de consulta</li>
+        <li class="step" [class.step-primary]="step() >= 4">Preferencias</li>
+      </ul>
+
+      <!-- Error -->
+      @if (errorMsg()) {
+        <div class="alert alert-error mb-6">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>{{ errorMsg() }}</span>
+        </div>
+      }
+
+      <div class="card bg-white shadow-lg">
+        <div class="card-body">
+          <form [formGroup]="form">
+
+            <!-- STEP 1: Datos personales -->
+            @if (step() === 1) {
+              <h3 class="text-lg font-semibold text-gray-800 mb-4">Datos personales</h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="form-control md:col-span-2">
+                  <label class="label"><span class="label-text">Nombre completo *</span></label>
+                  <input type="text" formControlName="nombreCompleto"  placeholder="Nombres y apellidos"
+                  class="input input-bordered w-full bg-white"
+                  [class.border-red-500]="form.controls['nombreCompleto'].invalid && form.controls['nombreCompleto'].touched" />
+                </div>
+                <div class="form-control">
+                  <label class="label"><span class="label-text">Documento de identidad *</span></label>
+                  <input type="text" formControlName="documentoIdentidad" placeholder="DNI / CE"
+                  class="input input-bordered w-full bg-white"/>
+                  @if (errorMessage('documentoIdentidad'); as msg) {
+                    <p class="text-red-500 text-sm mt-1">{{ msg }}</p>
+                  }
+                </div>
+                <div class="form-control">
+                  <label class="label"><span class="label-text">Edad *</span></label>
+                  <input type="number" formControlName="edad" class="input input-bordered w-full"
+                   [class.border-red-500]="form.controls['edad'].invalid && form.controls['edad'].touched" />
+                    @if (errorMessage('edad'); as msg) {
+                    <p class="text-red-500 text-sm mt-1">{{ msg }}</p>
+                    }
+                </div>
+                <div class="form-control">
+                  <label class="label"><span class="label-text">Género</span></label>
+                  <select formControlName="genero"
+                   class="select select-bordered w-full bg-white"
+                   [class.border-red-500]="form.controls['genero'].invalid && form.controls['genero'].touched" >
+                    <option value="">Seleccionar</option>
+                    <option>Femenino</option>
+                    <option>Masculino</option>
+                    <option>No binario</option>
+                    <option>Prefiero no decirlo</option>
+                  </select>
+                </div>
+                <div class="form-control">
+                  <label class="label"><span class="label-text">Estado civil</span></label>
+                  <select formControlName="estadoCivil" class="select select-bordered w-full"
+                   [class.border-red-500]="form.controls['estadoCivil'].invalid && form.controls['estadoCivil'].touched" >
+                    <option value="">Seleccionar</option>
+                    <option>Soltero/a</option>
+                    <option>Casado/a</option>
+                    <option>Conviviente</option>
+                    <option>Divorciado/a</option>
+                    <option>Viudo/a</option>
+                  </select>
+                </div>
+                <div class="form-control">
+                  <label class="label"><span class="label-text">País de residencia</span></label>
+                  <input type="text" formControlName="paisResidencia" class="input input-bordered w-full" value="Perú"
+                  [class.border-red-500]="form.controls['paisResidencia'].invalid && form.controls['paisResidencia'].touched" />
+                </div>
+                <div class="form-control">
+                  <label class="label"><span class="label-text">Provincia</span></label>
+                  <input type="text" formControlName="provincia" class="input input-bordered w-full"
+                   [class.border-red-500]="form.controls['provincia'].invalid && form.controls['provincia'].touched" />
+                </div>
+                <div class="form-control">
+                  <label class="label"><span class="label-text">Distrito</span></label>
+                  <input type="text" formControlName="distrito" class="input input-bordered w-full"
+                   [class.border-red-500]="form.controls['distrito'].invalid && form.controls['distrito'].touched" />
+                </div>
+                <div class="form-control">
+                  <label class="label"><span class="label-text">Teléfono / WhatsApp *</span></label>
+                  <input type="text" formControlName="telefono" class="input input-bordered w-full" placeholder="9XXXXXXXX"
+                   [class.border-red-500]="form.controls['telefono'].invalid && form.controls['telefono'].touched" />
+                    @if (errorMessage('telefono'); as msg) {
+                    <p class="text-red-500 text-sm mt-1">{{ msg }}</p>
+                  }
+                </div>
+                <div class="form-control">
+                  <label class="label"><span class="label-text">Correo electrónico *</span></label>
+                  <input type="email" formControlName="correo" class="input input-bordered w-full"
+                  [class.border-red-500]="form.controls['correo'].invalid && form.controls['correo'].touched"/>
+                  @if (errorMessage('correo'); as msg) {
+                    <p class="text-red-500 text-sm mt-1">{{ msg }}</p>
+                  }
+                </div>
+                <div class="form-control">
+                  <label class="label"><span class="label-text">Teléfono de emergencia</span></label>
+                  <input type="text" formControlName="telefonoEmergencia" class="input input-bordered w-full" />
+                </div>
+                <div class="form-control">
+                  <label class="label"><span class="label-text">Nombre contacto emergencia</span></label>
+                  <input type="text" formControlName="nombreContactoEmergencia" class="input input-bordered w-full" />
+                </div>
+                <div class="form-control">
+                  <label class="label"><span class="label-text">Parentesco</span></label>
+                  <input type="text" formControlName="parentescoEmergencia" class="input input-bordered w-full" />
+                </div>
+              </div>
+            }
+
+            <!-- STEP 2: Filtro y antecedentes -->
+            @if (step() === 2) {
+              <h3 class="text-lg font-semibold text-gray-800 mb-4">Información de filtro y antecedentes</h3>
+
+              <div class="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
+                <p class="text-sm text-amber-700">
+                  <strong>Importante:</strong> El Centro Acompañarte está dirigido a personas de la comunidad.
+                  Si presentas una situación de riesgo inminente, te orientaremos hacia servicios especializados.
+                </p>
+              </div>
+
+               <!-- Los 3 checkboxes de filtro (déjalos igual) -->
+              <div class="space-y-3 mb-6">
+                <label class="flex items-start gap-3 cursor-pointer">
+                  <input type="checkbox" formControlName="tieneSituacionRiesgo"
+                        class="checkbox checkbox-warning mt-1 shrink-0" />
+                  <span class="label-text text-gray-700">¿Presentas actualmente autolesiones, ideación suicida o consumo de sustancias (últimos 3 meses)?</span>
+                </label>
+              </div>
+
+                  <!-- Pantalla de derivación: aparece SOLO si hay motivo -->
+          @if (motivoDerivacion(); as motivo) {
+            <div class="mt-6 p-6 bg-amber-50 border border-amber-200 rounded-lg">
+              @if (motivo === 'riesgo') {
+                <h3 class="text-xl font-bold text-amber-900 mb-3">Tu bienestar es lo más importante</h3>
+                <p class="text-gray-700 mb-4">
+                  Agradecemos tu confianza al buscar apoyo. Lo que nos compartes requiere una atención
+                  más especializada de la que podemos ofrecer en el Centro Acompañarte. Queremos asegurarnos
+                  de que recibas la ayuda adecuada.
+                </p>
+                <p class="font-semibold mb-2 text-gray-800">Recursos disponibles ahora:</p>
+                <ul class="space-y-2 text-gray-700">
+                  <li>📞 <strong>Línea 113 opción 5</strong> (MINSA): atención psicológica 24/7, gratuita</li>
+                  <li>📞 <strong>Sanamente (PUCP)</strong>: 0800-00-141, atención telefónica gratuita</li>
+                  <li>📞 <strong>Voz Amiga</strong>: 0801-1-0202, acompañamiento emocional</li>
+                  <li>🏥 Si estás en peligro inmediato, acércate al hospital más cercano o llama al 911</li>
+                </ul>
+              }
+              @else if (motivo === 'alumno') {
+                <h3 class="text-xl font-bold text-amber-900 mb-3">El CA atiende a personas externas a la UARM</h3>
+                <p class="text-gray-700 mb-4">
+                  El Centro Acompañarte está dirigido a personas de la comunidad.
+                </p>
+                <p class="font-semibold mb-2 text-gray-800">Para ti tenemos:</p>
+                <ul class="space-y-2 text-gray-700">
+                  <li>🎓 <strong>Bienestar Estudiantil UARM</strong>: acompañamiento psicológico para alumnos</li>
+                  <li>📧 Escribe a bienestar&#64;uarm.pe o acércate a la oficina de Bienestar</li>
+                </ul>
+              }
+              @else if (motivo === 'trabajador') {
+                <h3 class="text-xl font-bold text-amber-900 mb-3">El CA atiende a personas externas a la UARM</h3>
+                <p class="text-gray-700 mb-4">
+                  El Centro Acompañarte está dirigido a personas de la comunidad.
+                </p>
+                <p class="font-semibold mb-2 text-gray-800">Tus opciones:</p>
+                <ul class="space-y-2 text-gray-700">
+                  <li>👥 <strong>Recursos Humanos UARM</strong>: consulta los beneficios de salud mental</li>
+                  <li>🏥 Tu <strong>EPS</strong> cubre consultas psicológicas — revisa tu plan</li>
+                </ul>
+              }
+
+              <div class="mt-6 flex gap-3">
+                <a routerLink="/" class="btn bg-violet-600 text-white hover:bg-violet-700">Volver al inicio</a>
+              </div>
+            </div>
+          }
+
+          @if (!motivoDerivacion()) {
+
+                <div class="form-control">
+                  <label class="label"><span class="label-text">¿Padeces alguna enfermedad actualmente o tomas medicación?</span></label>
+                  <textarea formControlName="enfermedadTratamiento" class="textarea textarea-bordered w-full" rows="2" placeholder="Si no aplica, escribe 'No'"></textarea>
+                </div>
+
+                <div class="form-control">
+                  <label class="label cursor-pointer justify-start gap-3">
+                    <input type="checkbox" formControlName="atencionPsicologicaPrevia" class="checkbox checkbox-primary" />
+                    <span class="label-text">¿Has recibido atención psicológica anteriormente?</span>
+                  </label>
+                </div>
+                @if (form.get('atencionPsicologicaPrevia')?.value) {
+                  <div class="form-control ml-8">
+                    <textarea formControlName="detalleAtencionPsicologica" class="textarea textarea-bordered w-full" rows="2" placeholder="Cuéntanos brevemente sobre esa experiencia"></textarea>
+                  </div>
+                }
+
+                <div class="form-control">
+                  <label class="label cursor-pointer justify-start gap-3">
+                    <input type="checkbox" formControlName="atencionPsiquiatricaPrevia" class="checkbox checkbox-primary" />
+                    <span class="label-text">¿Has recibido atención psiquiátrica anteriormente?</span>
+                  </label>
+                </div>
+                @if (form.get('atencionPsiquiatricaPrevia')?.value) {
+                  <div class="form-control ml-8">
+                    <textarea formControlName="detalleAtencionPsiquiatrica" class="textarea textarea-bordered w-full" rows="2" placeholder="Cuéntanos brevemente sobre esa experiencia"></textarea>
+                  </div>
+                }
+
+                <div class="form-control">
+                  <label class="label"><span class="label-text">¿Tienes algún diagnóstico previo?</span></label>
+                  <textarea formControlName="diagnosticosPrevios" class="textarea textarea-bordered w-full" rows="2" placeholder="Ej: ansiedad, depresión, TCA, TDAH... Si no, escribe 'No'"></textarea>
+                </div>
+            }
+          }
+            <!-- STEP 3: Motivo de consulta -->
+            @if (step() === 3) {
+              <h3 class="text-lg font-semibold text-gray-800 mb-4">Motivo de consulta</h3>
+              <div class="space-y-4">
+                <div class="form-control">
+                  <label class="label"><span class="label-text">¿Cuál es el motivo principal por el que buscas acompañamiento? *</span></label>
+                  <textarea formControlName="motivoConsulta" class="textarea textarea-bordered w-full" rows="4" placeholder="Cuéntanos con tus palabras qué te preocupa o qué situación estás atravesando"></textarea>
+                </div>
+                <div class="form-control">
+                  <label class="label"><span class="label-text">¿Hace cuánto tiempo tienes esta preocupación?</span></label>
+                  <input type="text" formControlName="tiempoConPreocupacion" class="input input-bordered w-full" placeholder="Ej: hace 3 meses, desde el año pasado..." />
+                </div>
+                <div class="form-control">
+                  <label class="label"><span class="label-text">¿Cómo impacta esto en tu vida diaria?</span></label>
+                  <textarea formControlName="impactoEnVida" class="textarea textarea-bordered w-full" rows="3" placeholder="En tu trabajo, estudios, relaciones, sueño, etc."></textarea>
+                </div>
+                <div class="form-control">
+                  <label class="label"><span class="label-text">¿Podrías costear un servicio psicológico particular?</span></label>
+                  <select formControlName="puedeCostearServicio" class="select select-bordered w-full">
+                    <option value="">Seleccionar</option>
+                    <option>Sí</option>
+                    <option>No</option>
+                    <option>Con dificultad</option>
+                  </select>
+                </div>
+                <div class="form-control">
+                  <label class="label"><span class="label-text">¿Qué esperas de las sesiones de acompañamiento?</span></label>
+                  <textarea formControlName="expectativaSesiones" class="textarea textarea-bordered w-full" rows="3"></textarea>
+                </div>
+                <div class="form-control">
+                  <label class="label"><span class="label-text">¿Qué esperas después de culminar las sesiones?</span></label>
+                  <textarea formControlName="expectativaPostSesiones" class="textarea textarea-bordered w-full" rows="3"></textarea>
+                </div>
+              </div>
+            }
+
+            <!-- STEP 4: Preferencias -->
+            @if (step() === 4) {
+              <h3 class="text-lg font-semibold text-gray-800 mb-4">Preferencias y disponibilidad</h3>
+              <div class="space-y-4">
+                <div class="form-control">
+                  <label class="label"><span class="label-text">Modalidad preferida *</span></label>
+                  <select formControlName="modalidadPreferida" class="select select-bordered w-full">
+                    <option value="">Seleccionar</option>
+                    <option value="PRESENCIAL">Presencial</option>
+                    <option value="VIRTUAL">Virtual</option>
+                    <option value="CUALQUIERA">Cualquiera</option>
+                  </select>
+                </div>
+
+                @if (form.get('modalidadPreferida')?.value === 'VIRTUAL' || form.get('modalidadPreferida')?.value === 'CUALQUIERA') {
+                  <div class="form-control">
+                    <label class="label cursor-pointer justify-start gap-3">
+                      <input type="checkbox" formControlName="espacioPrivado" class="checkbox checkbox-primary" />
+                      <span class="label-text">¿Cuentas con un espacio privado para realizar videollamadas?</span>
+                    </label>
+                  </div>
+                }
+
+                <div class="form-control">
+                  <label class="label"><span class="label-text">¿Tienes preferencia por el género de tu acompañante?</span></label>
+                  <select formControlName="preferenciaGeneroAd" class="select select-bordered w-full">
+                    <option value="SIN_PREFERENCIA">Sin preferencia</option>
+                    <option value="MUJER">Mujer</option>
+                    <option value="VARON">Varón</option>
+                  </select>
+                </div>
+
+                <div class="form-control">
+                  <label class="label cursor-pointer justify-start gap-3">
+                    <input type="checkbox" formControlName="tieneDisponibilidadFija" class="checkbox checkbox-primary" />
+                    <span class="label-text">¿Tienes horarios fijos disponibles?</span>
+                  </label>
+                </div>
+
+                <div class="form-control">
+                  <label class="label"><span class="label-text">Indica tu disponibilidad horaria *</span></label>
+                  <textarea formControlName="disponibilidadHoraria" class="textarea textarea-bordered w-full" rows="3" placeholder="Ej: Lunes y miércoles de 10am a 12pm, viernes en la tarde..."></textarea>
+                </div>
+
+                <div class="form-control">
+                  <label class="label"><span class="label-text">¿Cómo te enteraste del Centro Acompañarte?</span></label>
+                  <select formControlName="comoSeEntero" class="select select-bordered w-full">
+                    <option value="">Seleccionar</option>
+                    <option>Instagram</option>
+                    <option>WhatsApp</option>
+                    <option>Referido por un conocido</option>
+                    <option>Página web UARM</option>
+                    <option>Otro</option>
+                  </select>
+                </div>
+              </div>
+            }
+
+          </form>
+
+          <!-- Navigation buttons -->
+          <div class="flex justify-between mt-8">
+            @if (step() > 1) {
+              <button class="btn btn-ghost" (click)="prevStep()">← Anterior</button>
+            } @else {
+              <div></div>
+            }
+
+            @if (step() < 4) {
+              @if (!motivoDerivacion()) {
+                <button class="btn bg-violet-600 hover:bg-violet-700 text-white" (click)="nextStep()" >
+                  Siguiente →
+                </button>
+              }
+            } @else {
+              <button class="btn bg-violet-600 hover:bg-violet-700 text-white" (click)="submitForm()" [disabled]="loading()">
+                @if (loading()) {
+                  <span class="loading loading-spinner loading-sm"></span>
+                }
+                Enviar inscripción
+              </button>
+            }
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</div>
