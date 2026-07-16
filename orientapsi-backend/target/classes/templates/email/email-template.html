@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>OrientaPsi - Reset Password</title>
+</head>
+<body>
+    <h2>Hola <span th:text="${username}"></span>,</h2>
+    <p>Hemos recibido una solicitud para restablecer tu contraseña en OrientaPsi.</p>
+    <p>Haz clic en el siguiente enlace para continuar:</p>
+    <a th:href="${resetUrl}">Restablecer Contraseña</a>
+    <p>Este enlace expirará en 10 minutos.</p>
+    <br/>
+    <p>Si no solicitaste este cambio, puedes ignorar este correo.</p>
+    <p>- Equipo OrientaPsi</p>
+</body>
+</html>

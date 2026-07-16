@@ -1,0 +1,33 @@
+spring:
+  jpa:
+    database: postgresql
+    show-sql: false
+    hibernate:
+      ddl-auto: update
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/orientapsi_db2
+    username: postgres
+    password: postgres
+  mail:
+    default-encoding: UTF-8
+    host: smtp.gmail.com
+    username: <TU_CORREO>
+    password: <TU_PASSWORD>
+    port: 587
+    properties:
+      mail:
+        ssl:
+          enable: true
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+    protocol: smtp
+    test-connection: false
+    jackson:
+      serialization:
+        write-dates-as-timestamps: false
+jwt:
+  secret: aEIu9S7cvZUnPJWezau3rKUCxj4BLtpCVzhVSyam93prJOxofs7688P0OD5tmTIsLL6u7G9HpXvT
